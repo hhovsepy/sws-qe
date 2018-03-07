@@ -9,7 +9,7 @@ psycopg2
 lxml
 # Chrome driver installation
 chromedriver
-ipython
+ipython<6
 pytest-allure-adaptor
 widgetastic.core
 widgetastic.patternfly
