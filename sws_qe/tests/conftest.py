@@ -2,14 +2,11 @@
 from __future__ import unicode_literals
 import allure
 import pytest
-
-import codecs
+import yaml
 import os
 import sys
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.alert import Alert
 
 from widgetastic.browser import Browser
 
@@ -23,10 +20,21 @@ class CustomBrowser(Browser):
 
 
 @pytest.fixture(scope='session')
-def selenium(request):
+def cfg():
+    with open('conf/env.yaml', 'r') as ymlfile:
+        cfg = yaml.load(ymlfile)
+    return cfg
+
+
+@pytest.fixture(scope='session')
+def selenium(request, cfg):
+    webdriver_options = cfg['webdriver_options']
+    desired_capabilities = webdriver_options['desired_capabilities']
     driver = webdriver.Remote(
-        command_executor='http://localhost:4444/wd/hub', 
-        desired_capabilities={'platform': 'LINUX', 'browserName': 'chrome', 'unexpectedAlertBehaviour': 'ignore'}
+        command_executor=webdriver_options['command_executor'],
+        desired_capabilities={'platform': desired_capabilities['platform'],
+                              'browserName': desired_capabilities['browserName'],
+                              'unexpectedAlertBehaviour': desired_capabilities['unexpectedAlertBehaviour']}
         )
     request.addfinalizer(driver.quit)
     driver.maximize_window()
@@ -36,9 +44,8 @@ def selenium(request):
 
 
 @pytest.fixture(scope='function')
-def browser(selenium):
-    this_module = sys.modules[__name__]
-    selenium.get('http://jdoe:password@sws-istio-system.openshift.jonqe.lab.eng.bos.redhat.com/console/services')
+def browser(selenium, cfg):
+    selenium.get(cfg['sws_url'])
     return CustomBrowser(selenium)
 
 
