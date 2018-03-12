@@ -5,9 +5,10 @@ import pytest
 import yaml
 import os
 import sys
+import time
 
+from selenium.common.exceptions import WebDriverException
 from selenium import webdriver
-
 from widgetastic.browser import Browser
 
 selenium_browser = None
@@ -28,21 +29,37 @@ def cfg():
 
 @pytest.fixture(scope='session')
 def selenium(request, cfg):
-    webdriver_options = cfg['webdriver_options']
-    desired_capabilities = webdriver_options['desired_capabilities']
-    driver = webdriver.Remote(
-        command_executor=webdriver_options['command_executor'],
-        desired_capabilities={'platform': desired_capabilities['platform'],
-                              'browserName': desired_capabilities['browserName'],
-                              'unexpectedAlertBehaviour': desired_capabilities['unexpectedAlertBehaviour']}
-        )
+    success = False
+    # try to get the driver more times (workaround for zalenium issue in OS)
+    for x in range(0, 3):
+        try:
+            driver = get_driver(cfg)
+        except WebDriverException:
+            time.sleep(5)
+            continue
+        success = True
+        break
+    # trying one more time
+    if not success:
+        time.sleep(5)
+        driver = get_driver(cfg)
     request.addfinalizer(driver.quit)
     driver.maximize_window()
     global selenium_browser
     selenium_browser = driver
     return driver
 
+def get_driver(cfg):
+    webdriver_options = cfg['webdriver_options']
+    desired_capabilities = webdriver_options['desired_capabilities']
 
+    driver = webdriver.Remote(
+        command_executor=webdriver_options['command_executor'],
+        desired_capabilities={'platform': desired_capabilities['platform'],
+                              'browserName': desired_capabilities['browserName'],
+                              'unexpectedAlertBehaviour': desired_capabilities['unexpectedAlertBehaviour']}
+        )
+    return driver
 @pytest.fixture(scope='function')
 def browser(selenium, cfg):
     selenium.get(cfg['sws_url'])
