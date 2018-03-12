@@ -35,6 +35,7 @@ def selenium(request, cfg):
         try:
             driver = get_driver(cfg)
         except WebDriverException:
+            print "Failed to create driver, trying again"
             time.sleep(5)
             continue
         success = True
@@ -50,6 +51,7 @@ def selenium(request, cfg):
     return driver
 
 def get_driver(cfg):
+    print "Creating driver"
     webdriver_options = cfg['webdriver_options']
     desired_capabilities = webdriver_options['desired_capabilities']
 
