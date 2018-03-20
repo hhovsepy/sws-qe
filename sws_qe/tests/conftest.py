@@ -10,6 +10,9 @@ import time
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.remote.remote_connection import RemoteConnection
 from selenium import webdriver
+
+from rest_api.sws import SWSAPI
+
 from widgetastic.browser import Browser
 
 selenium_browser = None
@@ -70,8 +73,17 @@ def browser(selenium, cfg):
     return CustomBrowser(selenium)
 
 
+@pytest.fixture(scope='function')
+def rest_api(cfg):
+    return SWSAPI(cfg['sws_url'])
+
+
 def pytest_exception_interact(node, call, report):
     if selenium_browser is not None:
         allure.attach(
-            'Error screenshot', selenium_browser.get_screenshot_as_png(), allure.attach_type.PNG)
-        allure.attach('Error traceback', str(report.longrepr), allure.attach_type.TEXT)
+            'Error screenshot',
+            selenium_browser.get_screenshot_as_png(),
+            allure.attach_type.PNG)
+        allure.attach('Error traceback',
+                      str(report.longrepr),
+                      allure.attach_type.TEXT)

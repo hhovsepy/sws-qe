@@ -11,6 +11,8 @@ lxml
 chromedriver
 ipython<6
 pyyaml
+requests
+virtualenv
 pytest-allure-adaptor
 widgetastic.core
 widgetastic.patternfly
