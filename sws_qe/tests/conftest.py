@@ -8,6 +8,7 @@ import sys
 import time
 
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.remote.remote_connection import RemoteConnection
 from selenium import webdriver
 from widgetastic.browser import Browser
 
@@ -55,8 +56,9 @@ def get_driver(cfg):
     webdriver_options = cfg['webdriver_options']
     desired_capabilities = webdriver_options['desired_capabilities']
 
+    # set resolve_ip to false to make it work in cases when remote driver is running in OpenShift
     driver = webdriver.Remote(
-        command_executor=webdriver_options['command_executor'],
+        command_executor=RemoteConnection(webdriver_options['command_executor'],resolve_ip=False),
         desired_capabilities={'platform': desired_capabilities['platform'],
                               'browserName': desired_capabilities['browserName'],
                               'unexpectedAlertBehaviour': desired_capabilities['unexpectedAlertBehaviour']}
