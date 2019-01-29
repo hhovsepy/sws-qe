@@ -2,7 +2,7 @@ import pytest
 
 from kiali_qe.utils.log import logger
 
-DEFAULT_BOOKINFO_NAMESPACE = 'bookinfo'
+DEFAULT_BOOKINFO_NAMESPACE = 'bookinfo2'
 
 
 @pytest.fixture

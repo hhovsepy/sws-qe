@@ -15,7 +15,7 @@ Tests are divided into groups using different services and namespaces. This way 
 can be run in parallel.
 '''
 
-BOOKINFO_1 = 'bookinfo'
+BOOKINFO_1 = 'bookinfo2'
 BOOKINFO_2 = 'bookinfo2'
 REVIEWS = 'reviews'
 DETAILS = 'details'
