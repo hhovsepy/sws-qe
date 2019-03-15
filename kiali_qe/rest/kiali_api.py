@@ -482,6 +482,7 @@ class KialiExtendedClient(KialiClient):
             if _service_data['destinationRules'] \
                     and len(_service_data['destinationRules']['items']) > 0:
                 for _dr_data in _service_data['destinationRules']['items']:
+                    _traffic_policy = to_linear_string(_dr_data['spec']['trafficPolicy'])
                     destination_rules.append(DestinationRule(
                         status=self.get_istio_config_validation(
                             _dr_data['metadata']['namespace'],
@@ -489,7 +490,7 @@ class KialiExtendedClient(KialiClient):
                             _dr_data['metadata']['name']),
                         name=_dr_data['metadata']['name'],
                         host=_dr_data['spec']['host'],
-                        traffic_policy=to_linear_string(_dr_data['spec']['trafficPolicy']),
+                        traffic_policy=_traffic_policy if _traffic_policy != 'none' else '',
                         subsets=to_linear_string(
                             self.get_subset_labels(_dr_data['spec']['subsets'])),
                         created_at=parse_from_rest(_dr_data['metadata']['creationTimestamp']),
