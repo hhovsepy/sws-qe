@@ -509,10 +509,6 @@ class ApplicationsPageTest(AbstractListPageTest):
     def assert_details(self, name, namespace, check_metrics=False, force_refresh=False):
         logger.debug('Details: {}, {}'.format(name, namespace))
 
-        # load application details page
-        application_details_ui = self.load_details_page(name, namespace, force_refresh)
-        assert application_details_ui
-        assert name == application_details_ui.name
         # get application detals from rest
         application_details_rest = self.kiali_client.application_details(
             namespace=namespace,
@@ -523,6 +519,10 @@ class ApplicationsPageTest(AbstractListPageTest):
             namespace=namespace,
             application_name=name)
         assert application_details_oc
+        # load application details page
+        application_details_ui = self.load_details_page(name, namespace, force_refresh)
+        assert application_details_ui
+        assert name == application_details_ui.name
 
         assert application_details_ui.is_equal(application_details_rest,
                                                advanced_check=True), \
@@ -664,26 +664,26 @@ class WorkloadsPageTest(AbstractListPageTest):
                        force_refresh=False):
         logger.debug('Details: {}, {}'.format(name, namespace))
 
-        # load workload details page
-        workload_details_ui = self.load_details_page(name, namespace, force_refresh)
-        assert workload_details_ui
-        assert name == workload_details_ui.name
-        assert workload_type == workload_details_ui.workload_type, \
-            '{} and {} are not equal'.format(workload_type, workload_details_ui.workload_type)
-        # get workload detals from rest
+        # get workload details from rest
         workload_details_rest = self.kiali_client.workload_details(
             namespace=namespace,
             workload_name=name,
             workload_type=workload_type)
         assert workload_details_rest
         assert name == workload_details_rest.name
-        # get workload detals from rest
+        # get workload details from rest
         workload_details_oc = self.openshift_client.workload_details(
             namespace=namespace,
             workload_name=name,
             workload_type=workload_type)
         assert workload_details_oc
         assert name == workload_details_oc.name
+        # load workload details page
+        workload_details_ui = self.load_details_page(name, namespace, force_refresh)
+        assert workload_details_ui
+        assert name == workload_details_ui.name
+        assert workload_type == workload_details_ui.workload_type, \
+            '{} and {} are not equal'.format(workload_type, workload_details_ui.workload_type)
 
         assert workload_details_ui.is_equal(workload_details_rest,
                                             advanced_check=True), \
@@ -834,20 +834,22 @@ class ServicesPageTest(AbstractListPageTest):
     def assert_details(self, name, namespace, check_metrics=False,
                        force_refresh=False):
         logger.debug('Details: {}, {}'.format(name, namespace))
-        # load service details page
-        service_details_ui = self.load_details_page(name, namespace, force_refresh)
-        assert service_details_ui
-        assert name == service_details_ui.name
+
         # get service details from rest
         service_details_rest = self.kiali_client.service_details(
             namespace=namespace,
             service_name=name)
         assert service_details_rest
         assert name == service_details_rest.name
+        # get service details from OC
         service_details_oc = self.openshift_client.service_details(namespace=namespace,
                                                                    service_name=name)
         assert service_details_oc
         assert name == service_details_oc.name
+        # load service details page
+        service_details_ui = self.load_details_page(name, namespace, force_refresh)
+        assert service_details_ui
+        assert name == service_details_ui.name
 
         assert service_details_rest.istio_sidecar\
             == service_details_ui.istio_sidecar

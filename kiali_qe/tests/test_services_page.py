@@ -51,10 +51,7 @@ def test_filter_feature_random(kiali_client, openshift_client, browser):
     tests.assert_filter_feature_random()
 
 
-# putting to p_ro_top group although right now there are no tests changing health of app so
-# it could be in p_ro_top_safe
-@pytest.mark.p_ro_top
-@pytest.mark.p_group4
+@pytest.mark.p_group_last
 def test_all_services(kiali_client, openshift_client, browser):
     tests = ServicesPageTest(
         kiali_client=kiali_client, openshift_client=openshift_client, browser=browser)
